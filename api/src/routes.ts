@@ -1,8 +1,8 @@
-import { Router, Request, Response } from "express";
+import { Router } from "express";
+import hotelRoutes from "./routes/hotels";
 
-const routes = Router();
+const router = Router();
 
-routes.get("/", (req: Request, res: Response) => {
-  res.send("Home");
-});
-export default routes;
+router.use(hotelRoutes);
+
+export default router

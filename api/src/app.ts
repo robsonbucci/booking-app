@@ -1,11 +1,12 @@
 import express, { Express } from "express";
+import routes from "./routes";
+
 
 class AppController {
   private _express: Express;
 
   constructor() {
     this._express = express();
-
     this.middlewares();
     this.routes();
   }
@@ -15,7 +16,7 @@ class AppController {
   }
 
   routes() {
-    // this._express.use(import './routes');
+    this._express.use(routes);
   }
 
   get express(): Express {

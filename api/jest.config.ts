@@ -9,10 +9,10 @@ const config: Config = {
   testMatch: [
     "**/__tests__/**/*.test.[jt]s?(x)",
   ],
-  globals: {
-    'ts-jest': {
+  transform: {
+    '^.+\\.ts$': ['ts-jest', {
       tsconfig: 'tsconfig.json',
-    },
+    }],
   },
 };
 

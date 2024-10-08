@@ -1,18 +1,19 @@
-import type {Config} from 'jest';
+import type { Config } from "jest";
 
 const config: Config = {
-  preset: 'ts-jest',
-  testEnvironment: 'node',
+  preset: "ts-jest",
+  testEnvironment: "node",
   bail: true,
   clearMocks: true,
   coverageProvider: "v8",
-  testMatch: [
-    "**/__tests__/**/*.test.[jt]s?(x)",
-  ],
+  testMatch: ["**/__tests__/**/*.test.[jt]s?(x)"],
   transform: {
-    '^.+\\.ts$': ['ts-jest', {
-      tsconfig: 'tsconfig.json',
-    }],
+    "^.+\\.ts$": [
+      "ts-jest",
+      {
+        tsconfig: "tsconfig.json",
+      },
+    ],
   },
 };
 

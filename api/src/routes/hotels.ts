@@ -3,7 +3,7 @@ import Hotel from "../models/Hotel";
 
 const router = Router();
 
-router.post("/api/v1/hotels", async (req: Request, res: Response) => {
+router.post("/", async (req: Request, res: Response) => {
   const newHotel = new Hotel(req.body);
   try {
     const savedHotel = await newHotel.save();
@@ -13,7 +13,7 @@ router.post("/api/v1/hotels", async (req: Request, res: Response) => {
   }
 });
 
-router.put("/api/v1/hotels/:id", async (req: Request, res: Response) => {
+router.put("/:id", async (req: Request, res: Response) => {
   try {
     const updatedHotel = await Hotel.findByIdAndUpdate(req.params.id, {
       $set: req.body,
@@ -26,7 +26,7 @@ router.put("/api/v1/hotels/:id", async (req: Request, res: Response) => {
   }
 });
 
-router.delete('/api/v1/hotels/:id', async (req: Request, res: Response) => {
+router.delete('/:id', async (req: Request, res: Response) => {
   try {
     const deletedHotel = await Hotel.findByIdAndDelete(req.params.id);
     res.status(204).json(deletedHotel);
@@ -35,7 +35,7 @@ router.delete('/api/v1/hotels/:id', async (req: Request, res: Response) => {
   }
 });
 
-router.get("/api/v1/hotels/:id", async (req: Request, res: Response) => {
+router.get("/:id", async (req: Request, res: Response) => {
   try {
     const hotel = await Hotel.findById(req.params.id);
     res.status(200).json(hotel);
@@ -44,7 +44,7 @@ router.get("/api/v1/hotels/:id", async (req: Request, res: Response) => {
   }
 });
 
-router.get("/api/v1/hotels", async (req: Request, res: Response) => {
+router.get("/", async (req: Request, res: Response) => {
   try {
     const hotels = await Hotel.find();
     res.status(200).json(hotels);

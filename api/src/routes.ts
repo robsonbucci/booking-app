@@ -3,6 +3,6 @@ import hotelRoutes from "./routes/hotels";
 
 const router = Router();
 
-router.use(hotelRoutes);
+router.use("/api/v1/hotels", hotelRoutes);
 
 export default router

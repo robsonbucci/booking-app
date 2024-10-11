@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "npx tsx src/index.ts",
-    "dev": "npx tsx watch src/index.ts",
+    "dev": "npx tsx watch src/server.ts",
     "test": "jest --watchAll --coverage",
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watchAll"

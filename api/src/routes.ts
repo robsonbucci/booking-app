@@ -1,9 +1,11 @@
 import { Router, Request, Response } from "express";
 import hotelRoutes from "./routes/hotels";
+import authRoutes from "./routes/auth";
 
 const router = Router();
 
 router.use("/api/v1/hotels", hotelRoutes);
+router.use("/api/v1/auth", authRoutes);
 
 router.use((err: any, req: Request, res: any, next: any) => {
   const errorStatus: number = err.status || 500;

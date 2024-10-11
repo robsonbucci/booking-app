@@ -1,6 +1,4 @@
-import { Router, Request, Response } from "express";
-import Hotel from "../models/Hotel";
-import { ErrorFactory } from "../utils/error";
+import { Router } from "express";
 import HotelsController from "../controllers/HotelsController";
 
 const router = Router();

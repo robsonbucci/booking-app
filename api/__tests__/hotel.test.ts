@@ -13,7 +13,7 @@ beforeAll(async () => {
   await mongoose.connect(uri);
 });
 
-beforeEach(async () => {
+beforeEach(() => {
   validHotel = {
     name: "Test Hotel",
     type: "hotel",

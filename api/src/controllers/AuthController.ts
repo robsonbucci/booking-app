@@ -2,6 +2,9 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import User from "../models/User";
 import { ErrorFactory } from "../utils/error";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config();
 
 export default class AuthController {
   static async createUser(
@@ -47,8 +50,16 @@ export default class AuthController {
         );
       }
 
+      const token = jwt.sign(
+        { id: user._id, isAdmin: user.isAdmin },
+        process.env.JWT_SECRET!
+      );
+
       const { password, isAdmin, ...otherDetails } = (user as any)._doc;
-      res.status(200).json(otherDetails);
+      res
+        .cookie("access_token", token, { httpOnly: true })
+        .status(200)
+        .json({ ...otherDetails });
     } catch (error) {
       next(ErrorFactory.createError(500, (error as Error).message));
     }

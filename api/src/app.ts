@@ -1,5 +1,6 @@
 import express, { Express } from "express";
 import routes from "./routes";
+import cookieParser from "cookie-parser";
 
 
 class AppController {
@@ -13,6 +14,7 @@ class AppController {
 
   middlewares() {
     this._express.use(express.json());
+    this._express.use(cookieParser());
   }
 
   routes() {

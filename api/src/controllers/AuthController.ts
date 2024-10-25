@@ -20,6 +20,7 @@ export default class AuthController {
         username: req.body.username,
         email: req.body.email,
         password: hash,
+        isAdmin: req.body.isAdmin,
       });
       await newUser.save();
       res.status(201).json("User has been created");
@@ -52,7 +53,8 @@ export default class AuthController {
 
       const token = jwt.sign(
         { id: user._id, isAdmin: user.isAdmin },
-        process.env.JWT_SECRET!
+        process.env.JWT_SECRET!,
+        { expiresIn: "1h" }
       );
 
       const { password, isAdmin, ...otherDetails } = (user as any)._doc;

@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import User from "../src/models/User";
 let mongoServer: MongoMemoryServer;
 let validUser: any;
+let token: string;
 
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
@@ -20,7 +21,8 @@ beforeEach(async () => {
     isAdmin: false,
   };
 
-  await request(app).post("/api/v1/auth/register").send(validUser);
+  const response = await request(app).post("/api/v1/auth/register").send(validUser);
+  token = response.headers["set-cookie"][0].split(";")[0];
 });
 
 afterEach(async () => {
@@ -46,10 +48,14 @@ describe("TEST USER", () => {
       if (!user) {
         return;
       }
+      
+      console.log("🚀 ~ it ~ token:", token)
 
       const response = await request(app)
         .put(`/api/v1/user/${user._id}`)
+        .set("Cookie", [token])
         .send(updatedUser);
+
       expect(response.statusCode).toBe(200);
       expect(response.body).toHaveProperty("username", updatedUser.username);
       expect(response.body).toHaveProperty("email", updatedUser.email);

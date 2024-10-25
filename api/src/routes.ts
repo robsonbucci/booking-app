@@ -7,7 +7,7 @@ const router = Router();
 
 router.use("/api/v1/hotels", hotelRoutes);
 router.use("/api/v1/auth", authRoutes);
-router.use("/api/v1/user", userRoutes)
+router.use("/api/v1/user", userRoutes);
 
 router.use((err: any, req: Request, res: any, next: any) => {
   const errorStatus: number = err.status || 500;

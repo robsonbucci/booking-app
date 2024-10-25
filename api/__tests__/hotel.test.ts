@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 
 let mongoServer: MongoMemoryServer;
 let validHotel: any;
+let adminToken: string;
 
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
@@ -13,7 +14,7 @@ beforeAll(async () => {
   await mongoose.connect(uri);
 });
 
-beforeEach(() => {
+beforeEach(async () => {
   validHotel = {
     name: "Test Hotel",
     type: "hotel",
@@ -24,6 +25,24 @@ beforeEach(() => {
     description: "Test Description",
     cheapestPrice: 100,
   };
+
+  const adminUser = {
+    username: "adminuser",
+    email: "admin@me.com",
+    password: "adminpassword",
+    isAdmin: true,
+  };
+
+  await request(app).post("/api/v1/auth/register").send(adminUser);
+
+  const adminLogin = await request(app).post("/api/v1/auth/login").send({
+    email: adminUser.email,
+    password: adminUser.password,
+  });
+
+  if (adminLogin.headers["set-cookie"]) {
+    adminToken = adminLogin.headers["set-cookie"][0].split(";")[0];
+  }
 });
 
 afterEach(async () => {
@@ -40,6 +59,7 @@ describe("TEST HOTELS", () => {
     it("should return 201 status code when hotel is created with valid data", async () => {
       const response = await request(app)
         .post("/api/v1/hotels")
+        .set("Cookie", [adminToken])
         .send(validHotel);
       expect(response.statusCode).toBe(201);
       expect(response.body).toHaveProperty("name", validHotel.name);
@@ -52,6 +72,7 @@ describe("TEST HOTELS", () => {
       };
       const response = await request(app)
         .post("/api/v1/hotels")
+        .set("Cookie", [adminToken])
         .send(invalidHotel);
       expect(response.statusCode).toBe(500);
     });
@@ -67,6 +88,7 @@ describe("TEST HOTELS", () => {
 
       const response = await request(app)
         .put(`/api/v1/hotels/${newHotel._id}`)
+        .set("Cookie", [adminToken])
         .send(updatedHotel);
 
       expect(response.statusCode).toBe(200);
@@ -80,6 +102,7 @@ describe("TEST HOTELS", () => {
 
       const response = await request(app)
         .put("/api/v1/hotels/1234567890")
+        .set("Cookie", [adminToken])
         .send(updatedHotel);
 
       expect(response.statusCode).toBe(500);
@@ -90,14 +113,16 @@ describe("TEST HOTELS", () => {
     it("should return 200 status code when hotel is deleted successfully", async () => {
       const newHotel = await Hotel.create(validHotel);
 
-      const response = await request(app).delete(
-        `/api/v1/hotels/${newHotel._id}`
-      );
+      const response = await request(app)
+        .delete(`/api/v1/hotels/${newHotel._id}`)
+        .set("Cookie", [adminToken]);
       expect(response.statusCode).toBe(204);
     });
 
     it("should return 500 status code when ID is invalid", async () => {
-      const response = await request(app).delete("/api/v1/hotels/23456789");
+      const response = await request(app)
+        .delete("/api/v1/hotels/23456789")
+        .set("Cookie", [adminToken]);
       expect(response.statusCode).toBe(500);
     });
   });

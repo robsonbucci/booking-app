@@ -1,13 +1,14 @@
 import { Router } from "express";
 import HotelsController from "../controllers/HotelsController";
+import Token from "../utils/verifyToken";
 
 const router = Router();
 
-router.post("/", HotelsController.createHotel);
+router.post("/", Token.verifyAdmin, HotelsController.createHotel);
 
-router.put("/:id", HotelsController.updateHotel);
+router.put("/:id", Token.verifyAdmin, HotelsController.updateHotel);
 
-router.delete("/:id", HotelsController.deleteHotel);
+router.delete("/:id", Token.verifyAdmin, HotelsController.deleteHotel);
 
 router.get("/:id", HotelsController.getHotelById);
 

@@ -5,7 +5,8 @@ import mongoose from "mongoose";
 import User from "../src/models/User";
 let mongoServer: MongoMemoryServer;
 let validUser: any;
-let token: string;
+let userToken: string;
+let adminToken: string;
 
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
@@ -21,8 +22,36 @@ beforeEach(async () => {
     isAdmin: false,
   };
 
-  const response = await request(app).post("/api/v1/auth/register").send(validUser);
-  token = response.headers["set-cookie"][0].split(";")[0];
+  const response = await request(app)
+    .post("/api/v1/auth/register")
+    .send(validUser);
+
+  const userLogin = await request(app).post("/api/v1/auth/login").send({
+    email: validUser.email,
+    password: validUser.password,
+  });
+
+  if (userLogin.headers["set-cookie"]) {
+    userToken = userLogin.headers["set-cookie"][0].split(";")[0];
+  }
+
+  const adminUser = {
+    username: "adminuser",
+    email: "admin@me.com",
+    password: "adminpassword",
+    isAdmin: true,
+  };
+
+  await request(app).post("/api/v1/auth/register").send(adminUser);
+
+  const adminLogin = await request(app).post("/api/v1/auth/login").send({
+    email: adminUser.email,
+    password: adminUser.password,
+  });
+
+  if (adminLogin.headers["set-cookie"]) {
+    adminToken = adminLogin.headers["set-cookie"][0].split(";")[0];
+  }
 });
 
 afterEach(async () => {
@@ -48,12 +77,10 @@ describe("TEST USER", () => {
       if (!user) {
         return;
       }
-      
-      console.log("🚀 ~ it ~ token:", token)
 
       const response = await request(app)
         .put(`/api/v1/user/${user._id}`)
-        .set("Cookie", [token])
+        .set("Cookie", [userToken])
         .send(updatedUser);
 
       expect(response.statusCode).toBe(200);
@@ -70,7 +97,9 @@ describe("TEST USER", () => {
         return;
       }
 
-      const response = await request(app).delete(`/api/v1/user/${user._id}`);
+      const response = await request(app)
+        .delete(`/api/v1/user/${user._id}`)
+        .set("Cookie", [userToken]);
       expect(response.statusCode).toBe(204);
     });
   });
@@ -82,14 +111,18 @@ describe("TEST USER", () => {
         return;
       }
 
-      const response = await request(app).get(`/api/v1/user/${user._id}`);
+      const response = await request(app)
+        .get(`/api/v1/user/${user._id}`)
+        .set("Cookie", [userToken]);
       expect(response.statusCode).toBe(200);
     });
   });
 
   describe("GET /api/v1/user/", () => {
     it("should return 200 status code when a list of users is fetched successfully", async () => {
-      const response = await request(app).get("/api/v1/user");
+      const response = await request(app)
+        .get("/api/v1/user")
+        .set("Cookie", [adminToken]);
       expect(response.statusCode).toBe(200);
     });
   });
